@@ -161,11 +161,12 @@ export default function WarrantyScreen() {
         <Pressable
           onPress={handleCheck}
           disabled={loading || !orderNumber.trim()}
-          style={[
+          style={({ pressed }) => [
             styles.checkBtn,
             {
               backgroundColor:
                 loading || !orderNumber.trim() ? colors.muted : colors.primary,
+              opacity: pressed ? 0.7 : 1
             },
           ]}
         >
@@ -259,7 +260,7 @@ function WarrantyResultCard({
           <View style={[styles.resultDivider, { backgroundColor: colors.darkMuted }]} />
           <Pressable
             onPress={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium)}
-            style={[styles.claimBtn, { backgroundColor: colors.primary }]}
+            style={({ pressed }) => [styles.claimBtn, { backgroundColor: colors.primary, opacity: pressed ? 0.7 : 1 }]}
           >
             <Text style={[styles.claimBtnText, { color: colors.primaryForeground }]}>
               Claim replacement
@@ -269,7 +270,7 @@ function WarrantyResultCard({
         </>
       )}
 
-      <Pressable onPress={onReset} style={styles.resetBtn}>
+      <Pressable onPress={onReset} style={({ pressed }) => [styles.resetBtn, { opacity: pressed ? 0.7 : 1 }]}>
         <Text style={[styles.resetText, { color: colors.mutedForeground }]}>
           Check another order
         </Text>
@@ -455,7 +456,7 @@ const styles = StyleSheet.create({
   },
   resetBtn: {
     alignItems: "center",
-    paddingVertical: 4,
+    paddingVertical: 12,
   },
   resetText: {
     fontSize: 12,
