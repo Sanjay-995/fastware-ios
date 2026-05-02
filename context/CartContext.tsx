@@ -9,7 +9,7 @@ import React, {
 
 import type { Product } from "@/data/products";
 
-interface CartItem {
+export interface CartItem {
   product: Product;
   quantity: number;
 }
@@ -17,15 +17,23 @@ interface CartItem {
 interface CartContextValue {
   items: CartItem[];
   totalCount: number;
-  totalPrice: number;
+  subtotal: number;
+  gst: number;
+  shipping: number;
+  total: number;
   addToCart: (product: Product) => void;
   removeFromCart: (productId: string) => void;
+  incrementQuantity: (productId: string) => void;
+  decrementQuantity: (productId: string) => void;
   clearCart: () => void;
 }
 
 const CartContext = createContext<CartContextValue | null>(null);
 
-const STORAGE_KEY = "fastware_cart";
+const STORAGE_KEY = "fastware_cart_v2";
+const GST_RATE = 0.18;
+const FREE_SHIPPING_THRESHOLD = 999;
+const SHIPPING_FEE = 49;
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
@@ -42,53 +50,78 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     });
   }, []);
 
-  const persist = useCallback((updated: CartItem[]) => {
-    setItems(updated);
+  const save = (updated: CartItem[]) => {
     AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-  }, []);
+    return updated;
+  };
 
-  const addToCart = useCallback(
-    (product: Product) => {
-      setItems((prev) => {
-        const existing = prev.find((i) => i.product.id === product.id);
-        const updated = existing
+  const addToCart = useCallback((product: Product) => {
+    setItems((prev) => {
+      const existing = prev.find((i) => i.product.id === product.id);
+      return save(
+        existing
           ? prev.map((i) =>
               i.product.id === product.id
                 ? { ...i, quantity: i.quantity + 1 }
                 : i
             )
-          : [...prev, { product, quantity: 1 }];
-        AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-        return updated;
-      });
-    },
-    []
-  );
+          : [...prev, { product, quantity: 1 }]
+      );
+    });
+  }, []);
 
-  const removeFromCart = useCallback(
-    (productId: string) => {
-      setItems((prev) => {
-        const updated = prev.filter((i) => i.product.id !== productId);
-        AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-        return updated;
-      });
-    },
-    []
-  );
+  const removeFromCart = useCallback((productId: string) => {
+    setItems((prev) => save(prev.filter((i) => i.product.id !== productId)));
+  }, []);
+
+  const incrementQuantity = useCallback((productId: string) => {
+    setItems((prev) =>
+      save(
+        prev.map((i) =>
+          i.product.id === productId ? { ...i, quantity: i.quantity + 1 } : i
+        )
+      )
+    );
+  }, []);
+
+  const decrementQuantity = useCallback((productId: string) => {
+    setItems((prev) => {
+      const item = prev.find((i) => i.product.id === productId);
+      if (!item) return prev;
+      if (item.quantity === 1) return save(prev.filter((i) => i.product.id !== productId));
+      return save(
+        prev.map((i) =>
+          i.product.id === productId ? { ...i, quantity: i.quantity - 1 } : i
+        )
+      );
+    });
+  }, []);
 
   const clearCart = useCallback(() => {
-    persist([]);
-  }, [persist]);
+    setItems(save([]));
+  }, []);
 
-  const totalCount = items.reduce((sum, i) => sum + i.quantity, 0);
-  const totalPrice = items.reduce(
-    (sum, i) => sum + i.product.price * i.quantity,
-    0
-  );
+  const totalCount = items.reduce((s, i) => s + i.quantity, 0);
+  const subtotal = items.reduce((s, i) => s + i.product.price * i.quantity, 0);
+  const gst = Math.round(subtotal * GST_RATE);
+  const shipping = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE;
+  const total = subtotal + gst + shipping;
 
   return (
     <CartContext.Provider
-      value={{ items, totalCount, totalPrice, addToCart, removeFromCart, clearCart }}
+      value={{
+        items,
+        totalCount,
+        subtotal,
+        gst,
+        shipping,
+        total,
+        addToCart,
+        removeFromCart,
+        incrementQuantity,
+        decrementQuantity,
+        clearCart,
+      }}
     >
       {children}
     </CartContext.Provider>
