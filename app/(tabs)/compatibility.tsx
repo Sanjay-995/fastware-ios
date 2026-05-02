@@ -370,8 +370,10 @@ const styles = StyleSheet.create({
     paddingVertical: 0,
   },
   clearBtn: {
-    padding: 6,
-    margin: -6,
+    width: 44,
+    height: 44,
+    alignItems: "center",
+    justifyContent: "center",
   },
   categorySection: {
     marginBottom: 24,
