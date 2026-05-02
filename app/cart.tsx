@@ -1,7 +1,7 @@
 import { Feather } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import { router } from "expo-router";
-import React from "react";
+import React, { useMemo } from "react";
 import {
   FlatList,
   Platform,
@@ -15,6 +15,8 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useCart } from "@/context/CartContext";
 import type { CartItem } from "@/context/CartContext";
 import { useColors } from "@/hooks/useColors";
+
+// ─── Module-level sub-components (never defined inside a render function) ────
 
 function CartRow({
   item,
@@ -30,7 +32,7 @@ function CartRow({
     <View style={[styles.row, { borderBottomColor: colors.border }]}>
       <View style={[styles.rowThumb, { backgroundColor: colors.dark }]}>
         <Text style={[styles.rowThumbText, { color: colors.primary }]}>
-          {product.power}W
+          {product.isCombo ? "COMBO" : `${product.power}W`}
         </Text>
       </View>
 
@@ -39,7 +41,9 @@ function CartRow({
           {product.model}
         </Text>
         <Text style={[styles.rowSub, { color: colors.mutedForeground }]}>
-          {product.subtitle} · {product.length}
+          {product.isCombo
+            ? product.subtitle
+            : `${product.subtitle} · ${product.length}`}
         </Text>
         <Text style={[styles.rowPrice, { color: colors.primary }]}>
           ₹{(product.price * quantity).toLocaleString("en-IN")}
@@ -81,7 +85,10 @@ function CartRow({
           Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
           removeFromCart(product.id);
         }}
-        style={({ pressed }) => [styles.removeBtn, { opacity: pressed ? 0.5 : 1 }]}
+        style={({ pressed }) => [
+          styles.removeBtn,
+          { opacity: pressed ? 0.5 : 1 },
+        ]}
       >
         <Feather name="x" size={16} color={colors.mutedForeground} />
       </Pressable>
@@ -117,7 +124,11 @@ function PriceRow({
         style={[
           styles.priceValue,
           {
-            color: accent ? colors.primary : bold ? colors.foreground : colors.mutedForeground,
+            color: accent
+              ? colors.primary
+              : bold
+              ? colors.foreground
+              : colors.mutedForeground,
           },
           bold && { fontFamily: "Inter_700Bold", fontSize: 18 },
         ]}
@@ -128,17 +139,26 @@ function PriceRow({
   );
 }
 
-export default function CartScreen() {
-  const colors = useColors();
-  const insets = useSafeAreaInsets();
-  const { items, subtotal, gst, shipping, total, totalCount } = useCart();
-
-  const topPad = Platform.OS === "web" ? 67 : insets.top;
-  const botPad = Platform.OS === "web" ? 34 : insets.bottom;
-
-  const isEmpty = items.length === 0;
-
-  const SummaryFooter = () => (
+/**
+ * SummaryFooter is defined at module level so FlatList never receives a new
+ * component type across renders (which would cause unmount/remount flicker).
+ */
+function SummaryFooter({
+  subtotal,
+  gst,
+  shipping,
+  total,
+  botPad,
+  colors,
+}: {
+  subtotal: number;
+  gst: number;
+  shipping: number;
+  total: number;
+  botPad: number;
+  colors: ReturnType<typeof useColors>;
+}) {
+  return (
     <View
       style={[
         styles.summary,
@@ -175,14 +195,53 @@ export default function CartScreen() {
       )}
     </View>
   );
+}
+
+// ─── Screen ──────────────────────────────────────────────────────────────────
+
+export default function CartScreen() {
+  const colors = useColors();
+  const insets = useSafeAreaInsets();
+  const { items, subtotal, gst, shipping, total, totalCount } = useCart();
+
+  const topPad = Platform.OS === "web" ? 67 : insets.top;
+  const botPad = Platform.OS === "web" ? 34 : insets.bottom;
+
+  const isEmpty = items.length === 0;
+
+  /**
+   * Memoised footer element — only recreates when cart totals or layout
+   * values change, not on unrelated parent re-renders.
+   */
+  const listFooter = useMemo(
+    () => (
+      <SummaryFooter
+        subtotal={subtotal}
+        gst={gst}
+        shipping={shipping}
+        total={total}
+        botPad={botPad}
+        colors={colors}
+      />
+    ),
+    [subtotal, gst, shipping, total, botPad, colors]
+  );
 
   return (
     <View style={[styles.root, { backgroundColor: colors.background }]}>
       {/* Header */}
-      <View style={[styles.header, { paddingTop: topPad + 12, borderBottomColor: colors.border }]}>
+      <View
+        style={[
+          styles.header,
+          { paddingTop: topPad + 12, borderBottomColor: colors.border },
+        ]}
+      >
         <Pressable
           onPress={() => router.back()}
-          style={({ pressed }) => [styles.backBtn, { opacity: pressed ? 0.7 : 1 }]}
+          style={({ pressed }) => [
+            styles.backBtn,
+            { opacity: pressed ? 0.7 : 1 },
+          ]}
         >
           <Feather name="arrow-left" size={20} color={colors.foreground} />
         </Pressable>
@@ -205,7 +264,10 @@ export default function CartScreen() {
             onPress={() => router.push("/(tabs)/shop")}
             style={({ pressed }) => [
               styles.shopBtn,
-              { backgroundColor: colors.primary, opacity: pressed ? 0.7 : 1 },
+              {
+                backgroundColor: colors.primary,
+                opacity: pressed ? 0.7 : 1,
+              },
             ]}
           >
             <Text style={[styles.shopBtnText, { color: colors.primaryForeground }]}>
@@ -216,19 +278,19 @@ export default function CartScreen() {
       ) : (
         <>
           {/*
-           * FlatList with summary in ListFooterComponent so all content scrolls
-           * together — this prevents the summary from being hidden behind the
-           * absolute checkout bar when the item list is short.
+           * All cart content — rows + price summary — scrolls together inside
+           * the FlatList so the summary is never obscured by the fixed checkout
+           * bar regardless of how many items are in the cart.
            */}
           <FlatList
             data={items}
             keyExtractor={(i) => i.product.id}
             renderItem={({ item }) => <CartRow item={item} colors={colors} />}
-            ListFooterComponent={<SummaryFooter />}
+            ListFooterComponent={listFooter}
             showsVerticalScrollIndicator={false}
           />
 
-          {/* Checkout button — floats above content via absolute position */}
+          {/* Checkout button — overlays content via absolute positioning */}
           <View
             style={[
               styles.checkoutBar,
@@ -246,10 +308,18 @@ export default function CartScreen() {
               }}
               style={({ pressed }) => [
                 styles.checkoutBtn,
-                { backgroundColor: colors.primary, opacity: pressed ? 0.7 : 1 },
+                {
+                  backgroundColor: colors.primary,
+                  opacity: pressed ? 0.7 : 1,
+                },
               ]}
             >
-              <Text style={[styles.checkoutBtnText, { color: colors.primaryForeground }]}>
+              <Text
+                style={[
+                  styles.checkoutBtnText,
+                  { color: colors.primaryForeground },
+                ]}
+              >
                 Proceed to checkout
               </Text>
               <Feather name="arrow-right" size={16} color={colors.primaryForeground} />
@@ -326,8 +396,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   rowThumbText: {
-    fontSize: 13,
+    fontSize: 11,
     fontFamily: "Inter_700Bold",
+    letterSpacing: 0.5,
   },
   rowInfo: {
     flex: 1,
