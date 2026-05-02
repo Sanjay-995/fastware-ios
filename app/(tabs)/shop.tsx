@@ -106,13 +106,19 @@ function ProductCard({
           <View style={styles.actions}>
             <Pressable
               onPress={handleAdd}
-              style={[styles.addBtn, { borderColor: colors.primary }]}
+              style={({ pressed }) => [
+                styles.addBtn,
+                { borderColor: colors.primary, opacity: pressed ? 0.7 : 1 }
+              ]}
             >
               <Feather name="shopping-bag" size={14} color={colors.primary} />
             </Pressable>
             <Pressable
               onPress={handleView}
-              style={[styles.viewBtn, { backgroundColor: colors.primary }]}
+              style={({ pressed }) => [
+                styles.viewBtn,
+                { backgroundColor: colors.primary, opacity: pressed ? 0.7 : 1 }
+              ]}
             >
               <Text style={[styles.viewBtnText, { color: colors.primaryForeground }]}>
                 View
@@ -162,7 +168,11 @@ export default function ShopScreen() {
         </View>
         <Pressable
           onPress={() => router.push("/cart")}
-          style={[styles.cartBadge, { backgroundColor: totalCount > 0 ? colors.primary : colors.card, borderColor: colors.border, borderWidth: totalCount > 0 ? 0 : 1 }]}
+          style={({ pressed }) => [
+            styles.cartBadge,
+            { backgroundColor: totalCount > 0 ? colors.primary : colors.card, borderColor: colors.border, borderWidth: totalCount > 0 ? 0 : 1 },
+            { opacity: pressed ? 0.7 : 1 }
+          ]}
         >
           <Feather name="shopping-bag" size={14} color={totalCount > 0 ? colors.primaryForeground : colors.mutedForeground} />
           {totalCount > 0 && (
@@ -304,8 +314,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   addBtn: {
-    width: 36,
-    height: 36,
+    width: 44,
+    height: 44,
     borderRadius: 4,
     borderWidth: 1,
     alignItems: "center",
@@ -314,9 +324,10 @@ const styles = StyleSheet.create({
   viewBtn: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "center",
     gap: 6,
     paddingHorizontal: 14,
-    paddingVertical: 9,
+    height: 44,
     borderRadius: 4,
   },
   viewBtnText: {
