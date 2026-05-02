@@ -18,6 +18,27 @@ import { useCart } from "@/context/CartContext";
 import { products } from "@/data/products";
 import { useColors } from "@/hooks/useColors";
 
+const TECH_FEATURES = [
+  {
+    name: "FastShield™",
+    sub: "Smart IC Protection",
+    desc: "Overcurrent, overvoltage & temperature",
+    icon: "shield" as const,
+  },
+  {
+    name: "TrueWatt Certified™",
+    sub: "Verified Performance",
+    desc: "Lab-tested wattage published per batch",
+    icon: "activity" as const,
+  },
+  {
+    name: "FlexArmor™",
+    sub: "10,000+ Bend Cycles",
+    desc: "Reinforced stress joints, braided nylon",
+    icon: "zap" as const,
+  },
+];
+
 export default function ProductScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const colors = useColors();
@@ -42,7 +63,10 @@ export default function ProductScreen() {
         <Text style={[styles.notFoundText, { color: colors.foreground }]}>
           Product not found
         </Text>
-        <Pressable onPress={() => router.back()}>
+        <Pressable
+          onPress={() => router.back()}
+          style={({ pressed }) => [styles.backLinkWrap, { opacity: pressed ? 0.7 : 1 }]}
+        >
           <Text style={[styles.backLink, { color: colors.primary }]}>Go back</Text>
         </Pressable>
       </View>
@@ -73,14 +97,17 @@ export default function ProductScreen() {
         <View style={[styles.topBar, { paddingTop: topPad + 12 }]}>
           <Pressable
             onPress={() => router.back()}
-            style={({ pressed }) => [styles.backButton, { backgroundColor: colors.card, opacity: pressed ? 0.7 : 1 }]}
+            style={({ pressed }) => [
+              styles.backButton,
+              { backgroundColor: colors.card, opacity: pressed ? 0.7 : 1 },
+            ]}
           >
             <Feather name="arrow-left" size={18} color={colors.foreground} />
           </Pressable>
           <Text style={[styles.topBarWordmark, { color: colors.mutedForeground }]}>
             FASTWARE
           </Text>
-          <View style={{ width: 36 }} />
+          <View style={{ width: 44 }} />
         </View>
 
         {/* Hero image */}
@@ -93,7 +120,7 @@ export default function ProductScreen() {
           <View style={styles.heroOverlay}>
             <View style={[styles.heroBadge, { backgroundColor: colors.primary }]}>
               <Text style={[styles.heroBadgeText, { color: colors.primaryForeground }]}>
-                {product.power} W
+                {product.powerLabel}
               </Text>
             </View>
           </View>
@@ -102,7 +129,7 @@ export default function ProductScreen() {
         {/* Product info */}
         <View style={styles.info}>
           <View style={styles.infoHeader}>
-            <View>
+            <View style={styles.infoTitles}>
               <Text style={[styles.modelText, { color: colors.foreground }]}>
                 {product.model}
               </Text>
@@ -120,11 +147,43 @@ export default function ProductScreen() {
           </Text>
 
           {/* Specs grid */}
-          <View style={[styles.specsGrid, { borderColor: colors.border }]}>
-            <SpecCell label="Power" value={`${product.power} W`} colors={colors} right />
-            <SpecCell label="Length" value={product.length} colors={colors} />
-            <SpecCell label="From" value={product.connectorFrom} colors={colors} right bottom={false} />
-            <SpecCell label="To" value={product.connectorTo} colors={colors} bottom={false} />
+          {!product.isCombo && (
+            <View style={[styles.specsGrid, { borderColor: colors.border }]}>
+              <SpecCell label="Power" value={product.powerLabel} colors={colors} right />
+              <SpecCell label="Length" value={product.length} colors={colors} />
+              <SpecCell label="From" value={product.connectorFrom} colors={colors} right bottom={false} />
+              <SpecCell label="To" value={product.connectorTo} colors={colors} bottom={false} />
+            </View>
+          )}
+
+          {/* Technology stack */}
+          <View style={styles.techSection}>
+            <Text style={[styles.techSectionLabel, { color: colors.mutedForeground }]}>
+              TECHNOLOGY INSIDE
+            </Text>
+            {TECH_FEATURES.map((t) => (
+              <View
+                key={t.name}
+                style={[styles.techFeatureRow, { backgroundColor: colors.dark }]}
+              >
+                <View style={[styles.techIconWrap, { backgroundColor: colors.primary }]}>
+                  <Feather name={t.icon} size={14} color={colors.primaryForeground} />
+                </View>
+                <View style={styles.techFeatureText}>
+                  <View style={styles.techFeatureNameRow}>
+                    <Text style={[styles.techFeatureName, { color: colors.secondary }]}>
+                      {t.name}
+                    </Text>
+                    <Text style={[styles.techFeatureSub, { color: colors.primary }]}>
+                      {t.sub}
+                    </Text>
+                  </View>
+                  <Text style={[styles.techFeatureDesc, { color: colors.mutedForeground }]}>
+                    {t.desc}
+                  </Text>
+                </View>
+              </View>
+            ))}
           </View>
 
           {/* Wear indicator */}
@@ -146,10 +205,15 @@ export default function ProductScreen() {
           </View>
 
           {/* Warranty note */}
-          <View style={[styles.warrantyNote, { backgroundColor: colors.card, borderColor: colors.border }]}>
+          <View
+            style={[
+              styles.warrantyNote,
+              { backgroundColor: colors.card, borderColor: colors.border },
+            ]}
+          >
             <Feather name="shield" size={16} color={colors.primary} />
             <Text style={[styles.warrantyNoteText, { color: colors.foreground }]}>
-              24-month replacement on order number alone. No registration required.
+              24-month replacement on order number alone. No registration required. BIS Certified IS 15885.
             </Text>
           </View>
 
@@ -190,8 +254,12 @@ export default function ProductScreen() {
               onPress={handleAdd}
               style={({ pressed }) => [
                 styles.addBtn,
-                { backgroundColor: added ? colors.card : colors.primary, borderColor: colors.border, borderWidth: added ? 1 : 0 },
-                { opacity: pressed ? 0.7 : 1 }
+                {
+                  backgroundColor: added ? colors.card : colors.primary,
+                  borderColor: colors.border,
+                  borderWidth: added ? 1 : 0,
+                },
+                { opacity: pressed ? 0.7 : 1 },
               ]}
             >
               <Feather
@@ -214,7 +282,10 @@ export default function ProductScreen() {
               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
               router.push("/cart");
             }}
-            style={({ pressed }) => [styles.viewCartBtn, { backgroundColor: colors.dark, opacity: pressed ? 0.7 : 1 }]}
+            style={({ pressed }) => [
+              styles.viewCartBtn,
+              { backgroundColor: colors.dark, opacity: pressed ? 0.7 : 1 },
+            ]}
           >
             <Feather name="shopping-bag" size={16} color={colors.secondary} />
             {cartItem && (
@@ -274,6 +345,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: "Inter_500Medium",
   },
+  backLinkWrap: {
+    padding: 12,
+  },
   backLink: {
     fontSize: 14,
     fontFamily: "Inter_400Regular",
@@ -317,9 +391,9 @@ const styles = StyleSheet.create({
     borderRadius: 2,
   },
   heroBadgeText: {
-    fontSize: 14,
+    fontSize: 13,
     fontFamily: "Inter_700Bold",
-    letterSpacing: 1,
+    letterSpacing: 0.5,
   },
   info: {
     padding: 20,
@@ -329,6 +403,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "flex-start",
+  },
+  infoTitles: {
+    flex: 1,
+    marginRight: 12,
   },
   modelText: {
     fontSize: 28,
@@ -368,8 +446,58 @@ const styles = StyleSheet.create({
     textTransform: "uppercase",
   },
   specCellValue: {
-    fontSize: 18,
+    fontSize: 16,
     fontFamily: "Inter_600SemiBold",
+  },
+  techSection: {
+    gap: 8,
+  },
+  techSectionLabel: {
+    fontSize: 10,
+    fontFamily: "Inter_500Medium",
+    letterSpacing: 1.5,
+    textTransform: "uppercase",
+    marginBottom: 2,
+  },
+  techFeatureRow: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: 12,
+    borderRadius: 4,
+    padding: 12,
+  },
+  techIconWrap: {
+    width: 32,
+    height: 32,
+    borderRadius: 4,
+    alignItems: "center",
+    justifyContent: "center",
+    flexShrink: 0,
+  },
+  techFeatureText: {
+    flex: 1,
+    gap: 2,
+  },
+  techFeatureNameRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    flexWrap: "wrap",
+  },
+  techFeatureName: {
+    fontSize: 14,
+    fontFamily: "Inter_700Bold",
+  },
+  techFeatureSub: {
+    fontSize: 10,
+    fontFamily: "Inter_500Medium",
+    letterSpacing: 0.5,
+    textTransform: "uppercase",
+  },
+  techFeatureDesc: {
+    fontSize: 12,
+    fontFamily: "Inter_400Regular",
+    lineHeight: 17,
   },
   wearCard: {
     borderRadius: 4,
