@@ -18,6 +18,8 @@ import { products } from "@/data/products";
 import type { Product } from "@/data/products";
 import { useColors } from "@/hooks/useColors";
 
+const TECH_CHIPS = ["FastShield™", "TrueWatt™", "FlexArmor™"] as const;
+
 function ProductCard({
   product,
   colors,
@@ -56,7 +58,7 @@ function ProductCard({
       >
         {/* Card header */}
         <View style={styles.cardHeader}>
-          <View>
+          <View style={styles.cardTitleGroup}>
             <Text style={[styles.cardModel, { color: colors.secondary }]}>
               {product.model}
             </Text>
@@ -64,7 +66,13 @@ function ProductCard({
               {product.subtitle}
             </Text>
           </View>
-          {product.inStock ? (
+          {product.isCombo ? (
+            <View style={[styles.stockBadge, { backgroundColor: colors.primary }]}>
+              <Text style={[styles.stockText, { color: colors.primaryForeground }]}>
+                Combo
+              </Text>
+            </View>
+          ) : product.inStock ? (
             <View style={[styles.stockBadge, { backgroundColor: colors.primary }]}>
               <Text style={[styles.stockText, { color: colors.primaryForeground }]}>
                 In stock
@@ -84,13 +92,22 @@ function ProductCard({
 
         {/* Specs row */}
         <View style={styles.specsRow}>
-          <SpecChip label={`${product.power} W`} colors={colors} />
+          <SpecChip label={product.powerLabel} colors={colors} />
           <SpecChip label={product.length} colors={colors} />
-          <SpecChip label={product.connectorFrom} colors={colors} />
-          <SpecChip label={product.connectorTo} colors={colors} />
+          {!product.isCombo && <SpecChip label={product.connectorFrom} colors={colors} />}
+          {!product.isCombo && <SpecChip label={product.connectorTo} colors={colors} />}
         </View>
 
-        {/* Wear indicator note */}
+        {/* Tech stack chips */}
+        <View style={styles.techRow}>
+          {TECH_CHIPS.map((chip) => (
+            <View key={chip} style={[styles.techChip, { borderColor: colors.primary }]}>
+              <Text style={[styles.techChipText, { color: colors.primary }]}>{chip}</Text>
+            </View>
+          ))}
+        </View>
+
+        {/* Wear indicator / combo feature note */}
         <View style={styles.featureRow}>
           <View style={[styles.featureDot, { backgroundColor: colors.primary }]} />
           <Text style={[styles.featureText, { color: colors.mutedForeground }]}>
@@ -108,7 +125,7 @@ function ProductCard({
               onPress={handleAdd}
               style={({ pressed }) => [
                 styles.addBtn,
-                { borderColor: colors.primary, opacity: pressed ? 0.7 : 1 }
+                { borderColor: colors.primary, opacity: pressed ? 0.7 : 1 },
               ]}
             >
               <Feather name="shopping-bag" size={14} color={colors.primary} />
@@ -117,7 +134,7 @@ function ProductCard({
               onPress={handleView}
               style={({ pressed }) => [
                 styles.viewBtn,
-                { backgroundColor: colors.primary, opacity: pressed ? 0.7 : 1 }
+                { backgroundColor: colors.primary, opacity: pressed ? 0.7 : 1 },
               ]}
             >
               <Text style={[styles.viewBtnText, { color: colors.primaryForeground }]}>
@@ -170,17 +187,33 @@ export default function ShopScreen() {
           onPress={() => router.push("/cart")}
           style={({ pressed }) => [
             styles.cartBadge,
-            { backgroundColor: totalCount > 0 ? colors.primary : colors.card, borderColor: colors.border, borderWidth: totalCount > 0 ? 0 : 1 },
-            { opacity: pressed ? 0.7 : 1 }
+            {
+              backgroundColor: totalCount > 0 ? colors.primary : colors.card,
+              borderColor: colors.border,
+              borderWidth: totalCount > 0 ? 0 : 1,
+            },
+            { opacity: pressed ? 0.7 : 1 },
           ]}
         >
-          <Feather name="shopping-bag" size={14} color={totalCount > 0 ? colors.primaryForeground : colors.mutedForeground} />
+          <Feather
+            name="shopping-bag"
+            size={14}
+            color={totalCount > 0 ? colors.primaryForeground : colors.mutedForeground}
+          />
           {totalCount > 0 && (
             <Text style={[styles.cartCount, { color: colors.primaryForeground }]}>
               {totalCount}
             </Text>
           )}
         </Pressable>
+      </View>
+
+      {/* Tech banner */}
+      <View style={[styles.techBanner, { backgroundColor: colors.dark }]}>
+        <View style={[styles.techBannerDot, { backgroundColor: colors.primary }]} />
+        <Text style={[styles.techBannerText, { color: colors.mutedForeground }]}>
+          Every cable — FastShield™ · TrueWatt Certified™ · FlexArmor™ · BIS Certified IS 15885
+        </Text>
       </View>
 
       {/* Product list */}
@@ -207,7 +240,7 @@ const styles = StyleSheet.create({
     alignItems: "flex-end",
     justifyContent: "space-between",
     paddingHorizontal: 20,
-    paddingBottom: 24,
+    paddingBottom: 16,
   },
   sectionIndex: {
     fontSize: 11,
@@ -226,11 +259,34 @@ const styles = StyleSheet.create({
     gap: 6,
     paddingHorizontal: 12,
     paddingVertical: 8,
+    minHeight: 44,
     borderRadius: 4,
   },
   cartCount: {
     fontSize: 13,
     fontFamily: "Inter_600SemiBold",
+  },
+  techBanner: {
+    marginHorizontal: 20,
+    marginBottom: 16,
+    borderRadius: 4,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+  },
+  techBannerDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    flexShrink: 0,
+  },
+  techBannerText: {
+    fontSize: 11,
+    fontFamily: "Inter_400Regular",
+    lineHeight: 16,
+    flex: 1,
   },
   list: {
     paddingHorizontal: 20,
@@ -245,6 +301,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "flex-start",
+  },
+  cardTitleGroup: {
+    flex: 1,
+    marginRight: 8,
   },
   cardModel: {
     fontSize: 18,
@@ -283,6 +343,22 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontFamily: "Inter_500Medium",
     letterSpacing: 0.3,
+  },
+  techRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 6,
+  },
+  techChip: {
+    paddingHorizontal: 7,
+    paddingVertical: 3,
+    borderRadius: 2,
+    borderWidth: 1,
+  },
+  techChipText: {
+    fontSize: 10,
+    fontFamily: "Inter_500Medium",
+    letterSpacing: 0.2,
   },
   featureRow: {
     flexDirection: "row",
