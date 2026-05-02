@@ -65,7 +65,7 @@ export default function CompatibilityScreen() {
     return (
       <View style={[styles.container, { backgroundColor: colors.background }]}>
         <View style={[styles.header, { paddingTop: topPad + 16 }]}>
-          <Pressable onPress={handleBack} style={styles.backBtn}>
+          <Pressable onPress={handleBack} style={({ pressed }) => [styles.backBtn, { opacity: pressed ? 0.7 : 1 }]}>
             <Feather name="arrow-left" size={20} color={colors.foreground} />
           </Pressable>
           <View style={styles.headerText}>
@@ -155,7 +155,7 @@ export default function CompatibilityScreen() {
           returnKeyType="search"
         />
         {query.length > 0 && (
-          <Pressable onPress={() => setQuery("")}>
+          <Pressable onPress={() => setQuery("")} style={({ pressed }) => [{ padding: 10, margin: -10 }, { opacity: pressed ? 0.7 : 1 }]}>
             <Feather name="x" size={16} color={colors.mutedForeground} />
           </Pressable>
         )}
@@ -176,10 +176,11 @@ export default function CompatibilityScreen() {
               <Pressable
                 key={device.id}
                 onPress={() => handleSelect(device)}
-                style={[
+                style={({ pressed }) => [
                   styles.deviceRow,
                   { borderColor: colors.border },
                   i === devs.length - 1 && { borderBottomWidth: 0 },
+                  { opacity: pressed ? 0.7 : 1 }
                 ]}
               >
                 <View>
@@ -233,8 +234,8 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   backBtn: {
-    width: 36,
-    height: 36,
+    width: 44,
+    height: 44,
     alignItems: "center",
     justifyContent: "center",
   },
