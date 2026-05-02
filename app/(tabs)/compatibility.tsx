@@ -104,7 +104,10 @@ export default function CompatibilityScreen() {
                   Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                   router.push(`/product/${p.id}`);
                 }}
-                style={[styles.resultCard, { backgroundColor: colors.dark }]}
+                style={({ pressed }) => [
+                  styles.resultCard,
+                  { backgroundColor: colors.dark, opacity: pressed ? 0.75 : 1 },
+                ]}
               >
                 <View style={styles.resultLeft}>
                   <Text style={[styles.resultModel, { color: colors.secondary }]}>
