@@ -18,7 +18,7 @@ import { products } from "@/data/products";
 import { useColors } from "@/hooks/useColors";
 
 const PILLARS = [
-  { label: "Made in India", icon: "flag" as const },
+  { label: "Imported from China", icon: "flag" as const },
   { label: "GST invoice", icon: "file-text" as const },
   { label: "UPI · Cards · COD", icon: "credit-card" as const },
   { label: "24-month warranty", icon: "shield" as const },
@@ -110,7 +110,7 @@ export default function HomeScreen() {
         </Text>
         <View style={[styles.tagChip, { backgroundColor: colors.dark }]}>
           <Text style={[styles.tagChipText, { color: colors.secondary }]}>
-            IN
+            fastware.in
           </Text>
         </View>
       </View>
@@ -221,9 +221,9 @@ const styles = StyleSheet.create({
     borderRadius: 2,
   },
   tagChipText: {
-    fontSize: 10,
+    fontSize: 9,
     fontFamily: "Inter_600SemiBold",
-    letterSpacing: 1,
+    letterSpacing: 0.3,
   },
   hero: {
     paddingHorizontal: 20,
