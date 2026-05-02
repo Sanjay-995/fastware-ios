@@ -130,7 +130,10 @@ export default function HomeScreen() {
 
         <Pressable
           onPress={handleShopPress}
-          style={[styles.ctaButton, { backgroundColor: colors.primary }]}
+          style={({ pressed }) => [
+            styles.ctaButton,
+            { backgroundColor: colors.primary, opacity: pressed ? 0.7 : 1 }
+          ]}
         >
           <Text style={[styles.ctaText, { color: colors.primaryForeground }]}>
             Shop cables
