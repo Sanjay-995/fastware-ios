@@ -28,6 +28,10 @@ function NativeTabLayout() {
         <Icon sf={{ default: "clock.badge.checkmark", selected: "clock.badge.checkmark.fill" }} />
         <Label>Warranty</Label>
       </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="about">
+        <Icon sf={{ default: "checkmark.seal", selected: "checkmark.seal.fill" }} />
+        <Label>Brand</Label>
+      </NativeTabs.Trigger>
     </NativeTabs>
   );
 }
@@ -119,6 +123,18 @@ function ClassicTabLayout() {
               <SymbolView name="clock.badge.checkmark" tintColor={color} size={22} />
             ) : (
               <Feather name="clock" size={22} color={color} />
+            ),
+        }}
+      />
+      <Tabs.Screen
+        name="about"
+        options={{
+          title: "Brand",
+          tabBarIcon: ({ color }) =>
+            isIOS ? (
+              <SymbolView name="checkmark.seal" tintColor={color} size={22} />
+            ) : (
+              <Feather name="award" size={22} color={color} />
             ),
         }}
       />
