@@ -24,13 +24,10 @@ function RootLayoutNav() {
   return (
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      <Stack.Screen
-        name="product/[id]"
-        options={{
-          headerShown: false,
-          presentation: "card",
-        }}
-      />
+      <Stack.Screen name="product/[id]" options={{ headerShown: false, presentation: "card" }} />
+      <Stack.Screen name="cart" options={{ headerShown: false, presentation: "card" }} />
+      <Stack.Screen name="checkout" options={{ headerShown: false, presentation: "card" }} />
+      <Stack.Screen name="confirmation" options={{ headerShown: false, presentation: "card" }} />
     </Stack>
   );
 }
@@ -56,7 +53,7 @@ export default function RootLayout() {
       <ErrorBoundary>
         <QueryClientProvider client={queryClient}>
           <CartProvider>
-            <GestureHandlerRootView>
+            <GestureHandlerRootView style={{ flex: 1 }}>
               <KeyboardProvider>
                 <RootLayoutNav />
               </KeyboardProvider>
