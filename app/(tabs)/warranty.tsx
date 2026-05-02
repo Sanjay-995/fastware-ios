@@ -448,6 +448,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: 8,
     paddingVertical: 12,
+    minHeight: 44,
     borderRadius: 4,
   },
   claimBtnText: {
@@ -457,6 +458,8 @@ const styles = StyleSheet.create({
   resetBtn: {
     alignItems: "center",
     paddingVertical: 12,
+    minHeight: 44,
+    justifyContent: "center",
   },
   resetText: {
     fontSize: 12,
