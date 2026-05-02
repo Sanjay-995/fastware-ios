@@ -150,6 +150,8 @@ export default function WarrantyScreen() {
               if (result) setResult(null);
             }}
             autoCapitalize="characters"
+            autoCorrect={false}
+            autoComplete="off"
             returnKeyType="done"
             onSubmitEditing={handleCheck}
           />
@@ -374,6 +376,8 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     paddingHorizontal: 14,
     paddingVertical: 12,
+    minHeight: 48,
+    justifyContent: "center",
   },
   input: {
     fontSize: 16,
@@ -390,6 +394,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: 8,
     paddingVertical: 14,
+    minHeight: 48,
     borderRadius: 4,
     marginTop: 4,
   },
