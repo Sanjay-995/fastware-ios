@@ -257,6 +257,7 @@ const styles = StyleSheet.create({
     alignSelf: "flex-start",
     paddingHorizontal: 20,
     paddingVertical: 12,
+    minHeight: 44,
     borderRadius: 4,
   },
   ctaText: {
