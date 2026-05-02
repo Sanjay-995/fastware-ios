@@ -160,14 +160,17 @@ export default function ShopScreen() {
           <Text style={[styles.sectionIndex, { color: colors.mutedForeground }]}>03</Text>
           <Text style={[styles.screenTitle, { color: colors.foreground }]}>Cables</Text>
         </View>
-        {totalCount > 0 && (
-          <View style={[styles.cartBadge, { backgroundColor: colors.primary }]}>
-            <Feather name="shopping-bag" size={14} color={colors.primaryForeground} />
+        <Pressable
+          onPress={() => router.push("/cart")}
+          style={[styles.cartBadge, { backgroundColor: totalCount > 0 ? colors.primary : colors.card, borderColor: colors.border, borderWidth: totalCount > 0 ? 0 : 1 }]}
+        >
+          <Feather name="shopping-bag" size={14} color={totalCount > 0 ? colors.primaryForeground : colors.mutedForeground} />
+          {totalCount > 0 && (
             <Text style={[styles.cartCount, { color: colors.primaryForeground }]}>
               {totalCount}
             </Text>
-          </View>
-        )}
+          )}
+        </Pressable>
       </View>
 
       {/* Product list */}
