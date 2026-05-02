@@ -232,6 +232,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: 8,
     paddingVertical: 14,
+    minHeight: 48,
     borderRadius: 4,
   },
   homeBtnText: { fontSize: 15, fontFamily: "Inter_600SemiBold" },
