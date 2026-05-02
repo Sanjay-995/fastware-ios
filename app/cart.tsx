@@ -52,7 +52,10 @@ function CartRow({
             Haptics.selectionAsync();
             decrementQuantity(product.id);
           }}
-          style={[styles.qtyBtn, { borderColor: colors.border }]}
+          style={({ pressed }) => [
+            styles.qtyBtn,
+            { borderColor: colors.border, opacity: pressed ? 0.6 : 1 },
+          ]}
         >
           <Feather name="minus" size={14} color={colors.foreground} />
         </Pressable>
@@ -64,7 +67,10 @@ function CartRow({
             Haptics.selectionAsync();
             incrementQuantity(product.id);
           }}
-          style={[styles.qtyBtn, { borderColor: colors.border }]}
+          style={({ pressed }) => [
+            styles.qtyBtn,
+            { borderColor: colors.border, opacity: pressed ? 0.6 : 1 },
+          ]}
         >
           <Feather name="plus" size={14} color={colors.foreground} />
         </Pressable>
@@ -75,7 +81,7 @@ function CartRow({
           Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
           removeFromCart(product.id);
         }}
-        style={styles.removeBtn}
+        style={({ pressed }) => [styles.removeBtn, { opacity: pressed ? 0.5 : 1 }]}
       >
         <Feather name="x" size={16} color={colors.mutedForeground} />
       </Pressable>
@@ -132,22 +138,63 @@ export default function CartScreen() {
 
   const isEmpty = items.length === 0;
 
+  const SummaryFooter = () => (
+    <View
+      style={[
+        styles.summary,
+        { borderTopColor: colors.border, paddingBottom: botPad + 108 },
+      ]}
+    >
+      <PriceRow
+        label="Subtotal"
+        value={`₹${subtotal.toLocaleString("en-IN")}`}
+        colors={colors}
+      />
+      <PriceRow
+        label="GST (18%)"
+        value={`₹${gst.toLocaleString("en-IN")}`}
+        colors={colors}
+      />
+      <PriceRow
+        label="Shipping"
+        value={shipping === 0 ? "Free" : `₹${shipping}`}
+        accent={shipping === 0}
+        colors={colors}
+      />
+      <View style={[styles.divider, { backgroundColor: colors.border }]} />
+      <PriceRow
+        label="Total"
+        value={`₹${total.toLocaleString("en-IN")}`}
+        bold
+        colors={colors}
+      />
+      {shipping === 0 && (
+        <Text style={[styles.freeShip, { color: colors.primary }]}>
+          Free shipping applied
+        </Text>
+      )}
+    </View>
+  );
+
   return (
     <View style={[styles.root, { backgroundColor: colors.background }]}>
       {/* Header */}
       <View style={[styles.header, { paddingTop: topPad + 12, borderBottomColor: colors.border }]}>
-        <Pressable onPress={() => router.back()} style={({ pressed }) => [styles.backBtn, { opacity: pressed ? 0.7 : 1 }]}>
+        <Pressable
+          onPress={() => router.back()}
+          style={({ pressed }) => [styles.backBtn, { opacity: pressed ? 0.7 : 1 }]}
+        >
           <Feather name="arrow-left" size={20} color={colors.foreground} />
         </Pressable>
         <Text style={[styles.title, { color: colors.foreground }]}>
           Cart {totalCount > 0 && `(${totalCount})`}
         </Text>
-        <View style={{ width: 36 }} />
+        <View style={{ width: 44 }} />
       </View>
 
       {isEmpty ? (
         <View style={styles.emptyState}>
-          <Feather name="shopping-bag" size={40} color={colors.mutedForeground} />
+          <Feather name="shopping-bag" size={48} color={colors.mutedForeground} />
           <Text style={[styles.emptyTitle, { color: colors.foreground }]}>
             Your cart is empty
           </Text>
@@ -156,7 +203,10 @@ export default function CartScreen() {
           </Text>
           <Pressable
             onPress={() => router.push("/(tabs)/shop")}
-            style={({ pressed }) => [styles.shopBtn, { backgroundColor: colors.primary, opacity: pressed ? 0.7 : 1 }]}
+            style={({ pressed }) => [
+              styles.shopBtn,
+              { backgroundColor: colors.primary, opacity: pressed ? 0.7 : 1 },
+            ]}
           >
             <Text style={[styles.shopBtnText, { color: colors.primaryForeground }]}>
               Shop cables
@@ -165,52 +215,20 @@ export default function CartScreen() {
         </View>
       ) : (
         <>
+          {/*
+           * FlatList with summary in ListFooterComponent so all content scrolls
+           * together — this prevents the summary from being hidden behind the
+           * absolute checkout bar when the item list is short.
+           */}
           <FlatList
             data={items}
             keyExtractor={(i) => i.product.id}
             renderItem={({ item }) => <CartRow item={item} colors={colors} />}
-            contentContainerStyle={{ paddingBottom: 16 }}
+            ListFooterComponent={<SummaryFooter />}
             showsVerticalScrollIndicator={false}
           />
 
-          {/* Price breakdown */}
-          <View
-            style={[
-              styles.summary,
-              { borderTopColor: colors.border, paddingBottom: botPad + 100 },
-            ]}
-          >
-            <PriceRow
-              label="Subtotal"
-              value={`₹${subtotal.toLocaleString("en-IN")}`}
-              colors={colors}
-            />
-            <PriceRow
-              label="GST (18%)"
-              value={`₹${gst.toLocaleString("en-IN")}`}
-              colors={colors}
-            />
-            <PriceRow
-              label="Shipping"
-              value={shipping === 0 ? "Free" : `₹${shipping}`}
-              accent={shipping === 0}
-              colors={colors}
-            />
-            <View style={[styles.divider, { backgroundColor: colors.border }]} />
-            <PriceRow
-              label="Total"
-              value={`₹${total.toLocaleString("en-IN")}`}
-              bold
-              colors={colors}
-            />
-            {shipping === 0 && (
-              <Text style={[styles.freeShip, { color: colors.primary }]}>
-                Free shipping applied
-              </Text>
-            )}
-          </View>
-
-          {/* Checkout button */}
+          {/* Checkout button — floats above content via absolute position */}
           <View
             style={[
               styles.checkoutBar,
@@ -226,7 +244,10 @@ export default function CartScreen() {
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
                 router.push("/checkout");
               }}
-              style={({ pressed }) => [styles.checkoutBtn, { backgroundColor: colors.primary, opacity: pressed ? 0.7 : 1 }]}
+              style={({ pressed }) => [
+                styles.checkoutBtn,
+                { backgroundColor: colors.primary, opacity: pressed ? 0.7 : 1 },
+              ]}
             >
               <Text style={[styles.checkoutBtnText, { color: colors.primaryForeground }]}>
                 Proceed to checkout
@@ -278,9 +299,12 @@ const styles = StyleSheet.create({
   },
   shopBtn: {
     marginTop: 8,
-    paddingHorizontal: 24,
-    paddingVertical: 12,
+    paddingHorizontal: 28,
+    paddingVertical: 13,
+    minHeight: 48,
     borderRadius: 4,
+    alignItems: "center",
+    justifyContent: "center",
   },
   shopBtnText: {
     fontSize: 14,
@@ -391,6 +415,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: 8,
     paddingVertical: 14,
+    minHeight: 48,
     borderRadius: 4,
   },
   checkoutBtnText: {
