@@ -163,7 +163,7 @@ function Row({
           styles.rowValue,
           {
             color: accent ? colors.primary : colors.secondary,
-            fontFamily: mono ? "Inter_500Medium" : "Inter_500Medium",
+            fontFamily: mono ? "Inter_700Bold" : "Inter_500Medium",
             letterSpacing: mono ? 1 : 0,
           },
         ]}
