@@ -136,7 +136,7 @@ export default function CartScreen() {
     <View style={[styles.root, { backgroundColor: colors.background }]}>
       {/* Header */}
       <View style={[styles.header, { paddingTop: topPad + 12, borderBottomColor: colors.border }]}>
-        <Pressable onPress={() => router.back()} style={styles.backBtn}>
+        <Pressable onPress={() => router.back()} style={({ pressed }) => [styles.backBtn, { opacity: pressed ? 0.7 : 1 }]}>
           <Feather name="arrow-left" size={20} color={colors.foreground} />
         </Pressable>
         <Text style={[styles.title, { color: colors.foreground }]}>
@@ -156,7 +156,7 @@ export default function CartScreen() {
           </Text>
           <Pressable
             onPress={() => router.push("/(tabs)/shop")}
-            style={[styles.shopBtn, { backgroundColor: colors.primary }]}
+            style={({ pressed }) => [styles.shopBtn, { backgroundColor: colors.primary, opacity: pressed ? 0.7 : 1 }]}
           >
             <Text style={[styles.shopBtnText, { color: colors.primaryForeground }]}>
               Shop cables
@@ -226,7 +226,7 @@ export default function CartScreen() {
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
                 router.push("/checkout");
               }}
-              style={[styles.checkoutBtn, { backgroundColor: colors.primary }]}
+              style={({ pressed }) => [styles.checkoutBtn, { backgroundColor: colors.primary, opacity: pressed ? 0.7 : 1 }]}
             >
               <Text style={[styles.checkoutBtnText, { color: colors.primaryForeground }]}>
                 Proceed to checkout
@@ -251,8 +251,8 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
   },
   backBtn: {
-    width: 36,
-    height: 36,
+    width: 44,
+    height: 44,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -328,8 +328,8 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   qtyBtn: {
-    width: 28,
-    height: 28,
+    width: 32,
+    height: 32,
     borderRadius: 4,
     borderWidth: 1,
     alignItems: "center",
@@ -338,11 +338,15 @@ const styles = StyleSheet.create({
   qtyNum: {
     fontSize: 15,
     fontFamily: "Inter_600SemiBold",
-    minWidth: 20,
+    minWidth: 24,
     textAlign: "center",
   },
   removeBtn: {
-    padding: 6,
+    padding: 10,
+    minWidth: 44,
+    minHeight: 44,
+    alignItems: "center",
+    justifyContent: "center",
   },
   summary: {
     paddingHorizontal: 20,
