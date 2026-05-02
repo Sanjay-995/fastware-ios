@@ -28,6 +28,9 @@ function Field({
   maxLength,
   colors,
   hint,
+  autoCapitalize = "none",
+  autoComplete = "off",
+  autoCorrect = false,
 }: {
   label: string;
   value: string;
@@ -37,6 +40,9 @@ function Field({
   maxLength?: number;
   colors: ReturnType<typeof useColors>;
   hint?: string;
+  autoCapitalize?: "none" | "sentences" | "words" | "characters";
+  autoComplete?: any;
+  autoCorrect?: boolean;
 }) {
   return (
     <View style={styles.fieldWrap}>
@@ -53,6 +59,9 @@ function Field({
         keyboardType={keyboardType ?? "default"}
         maxLength={maxLength}
         returnKeyType="next"
+        autoCapitalize={autoCapitalize}
+        autoComplete={autoComplete}
+        autoCorrect={autoCorrect}
       />
       {hint ? (
         <Text style={[styles.fieldHint, { color: colors.mutedForeground }]}>{hint}</Text>
@@ -198,7 +207,7 @@ export default function CheckoutScreen() {
           { paddingTop: topPad + 12, borderBottomColor: colors.border },
         ]}
       >
-        <Pressable onPress={() => router.back()} style={styles.backBtn}>
+        <Pressable onPress={() => router.back()} style={({ pressed }) => [styles.backBtn, { opacity: pressed ? 0.7 : 1 }]}>
           <Feather name="arrow-left" size={20} color={colors.foreground} />
         </Pressable>
         <Text style={[styles.title, { color: colors.foreground }]}>Checkout</Text>
@@ -207,7 +216,7 @@ export default function CheckoutScreen() {
 
       <ScrollView
         style={styles.scroll}
-        contentContainerStyle={{ paddingBottom: botPad + 120 }}
+        contentContainerStyle={{ paddingBottom: botPad + 220 }}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
@@ -216,18 +225,18 @@ export default function CheckoutScreen() {
           <Text style={[styles.sectionTitle, { color: colors.foreground }]}>
             Delivery details
           </Text>
-          <Field label="Full name" value={name} onChangeText={setName} placeholder="Sanjay Vishwakarma" colors={colors} />
-          <Field label="Mobile number" value={phone} onChangeText={(t) => setPhone(t.replace(/\D/g, "").slice(0, 10))} placeholder="9876543210" keyboardType="phone-pad" maxLength={10} colors={colors} />
-          <Field label="Street address" value={address} onChangeText={setAddress} placeholder="Building, street, area" colors={colors} />
+          <Field label="FULL NAME" value={name} onChangeText={setName} placeholder="Sanjay Vishwakarma" colors={colors} autoCapitalize="words" autoComplete="name" />
+          <Field label="MOBILE NUMBER" value={phone} onChangeText={(t) => setPhone(t.replace(/\D/g, "").slice(0, 10))} placeholder="9876543210" keyboardType="phone-pad" maxLength={10} colors={colors} autoComplete="tel" />
+          <Field label="STREET ADDRESS" value={address} onChangeText={setAddress} placeholder="Building, street, area" colors={colors} autoCapitalize="sentences" autoComplete="street-address" autoCorrect={true} />
           <View style={styles.row2}>
             <View style={{ flex: 1 }}>
-              <Field label="City" value={city} onChangeText={setCity} placeholder="Mumbai" colors={colors} />
+              <Field label="CITY" value={city} onChangeText={setCity} placeholder="Mumbai" colors={colors} autoCapitalize="words" autoComplete="address-level2" />
             </View>
             <View style={{ flex: 1 }}>
-              <Field label="State" value={deliveryState} onChangeText={setDeliveryState} placeholder="Maharashtra" colors={colors} />
+              <Field label="STATE" value={deliveryState} onChangeText={setDeliveryState} placeholder="Maharashtra" colors={colors} autoCapitalize="words" />
             </View>
           </View>
-          <Field label="Pincode" value={pincode} onChangeText={(t) => setPincode(t.replace(/\D/g, "").slice(0, 6))} placeholder="400001" keyboardType="numeric" maxLength={6} colors={colors} />
+          <Field label="PINCODE" value={pincode} onChangeText={(t) => setPincode(t.replace(/\D/g, "").slice(0, 6))} placeholder="400001" keyboardType="numeric" maxLength={6} colors={colors} autoComplete="postal-code" />
         </View>
 
         {/* Payment section */}
@@ -258,7 +267,7 @@ export default function CheckoutScreen() {
           {payMethod === "card" && (
             <View style={styles.payForm}>
               <Field
-                label="Card number"
+                label="CARD NUMBER"
                 value={cardNum}
                 onChangeText={(t) => setCardNum(formatCardNumber(t))}
                 placeholder="1234 5678 9012 3456"
@@ -267,13 +276,13 @@ export default function CheckoutScreen() {
               />
               <View style={styles.row2}>
                 <View style={{ flex: 1 }}>
-                  <Field label="Expiry" value={cardExpiry} onChangeText={(t) => setCardExpiry(formatExpiry(t))} placeholder="MM/YY" keyboardType="numeric" maxLength={5} colors={colors} />
+                  <Field label="EXPIRY" value={cardExpiry} onChangeText={(t) => setCardExpiry(formatExpiry(t))} placeholder="MM/YY" keyboardType="numeric" maxLength={5} colors={colors} />
                 </View>
                 <View style={{ flex: 1 }}>
                   <Field label="CVV" value={cardCvv} onChangeText={(t) => setCardCvv(t.replace(/\D/g, "").slice(0, 4))} placeholder="123" keyboardType="numeric" maxLength={4} colors={colors} />
                 </View>
               </View>
-              <Field label="Name on card" value={cardName} onChangeText={setCardName} placeholder="As on card" colors={colors} />
+              <Field label="NAME ON CARD" value={cardName} onChangeText={setCardName} placeholder="As on card" colors={colors} autoCapitalize="words" />
             </View>
           )}
 
@@ -329,9 +338,9 @@ export default function CheckoutScreen() {
         <Pressable
           onPress={handlePlaceOrder}
           disabled={placing}
-          style={[
+          style={({ pressed }) => [
             styles.placeBtn,
-            { backgroundColor: placing ? colors.muted : colors.primary },
+            { backgroundColor: placing ? colors.muted : colors.primary, opacity: pressed ? 0.7 : 1 },
           ]}
         >
           <Text
@@ -398,7 +407,7 @@ const styles = StyleSheet.create({
     paddingBottom: 14,
     borderBottomWidth: 1,
   },
-  backBtn: { width: 36, height: 36, alignItems: "center", justifyContent: "center" },
+  backBtn: { width: 44, height: 44, alignItems: "center", justifyContent: "center" },
   title: { fontSize: 17, fontFamily: "Inter_600SemiBold" },
   scroll: { flex: 1 },
   section: { padding: 20, gap: 14 },
