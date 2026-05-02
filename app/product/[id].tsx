@@ -73,7 +73,7 @@ export default function ProductScreen() {
         <View style={[styles.topBar, { paddingTop: topPad + 12 }]}>
           <Pressable
             onPress={() => router.back()}
-            style={[styles.backButton, { backgroundColor: colors.card }]}
+            style={({ pressed }) => [styles.backButton, { backgroundColor: colors.card, opacity: pressed ? 0.7 : 1 }]}
           >
             <Feather name="arrow-left" size={18} color={colors.foreground} />
           </Pressable>
@@ -188,9 +188,10 @@ export default function ProductScreen() {
           <Animated.View style={[{ flex: 1 }, { transform: [{ scale: scaleAdd }] }]}>
             <Pressable
               onPress={handleAdd}
-              style={[
+              style={({ pressed }) => [
                 styles.addBtn,
                 { backgroundColor: added ? colors.card : colors.primary, borderColor: colors.border, borderWidth: added ? 1 : 0 },
+                { opacity: pressed ? 0.7 : 1 }
               ]}
             >
               <Feather
@@ -213,7 +214,7 @@ export default function ProductScreen() {
               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
               router.push("/cart");
             }}
-            style={[styles.viewCartBtn, { backgroundColor: colors.dark }]}
+            style={({ pressed }) => [styles.viewCartBtn, { backgroundColor: colors.dark, opacity: pressed ? 0.7 : 1 }]}
           >
             <Feather name="shopping-bag" size={16} color={colors.secondary} />
             {cartItem && (
@@ -285,8 +286,8 @@ const styles = StyleSheet.create({
     paddingBottom: 12,
   },
   backButton: {
-    width: 36,
-    height: 36,
+    width: 44,
+    height: 44,
     borderRadius: 4,
     alignItems: "center",
     justifyContent: "center",
@@ -454,12 +455,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   addBtn: {
+    flex: 1,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
     gap: 8,
     paddingVertical: 14,
     borderRadius: 4,
+    minHeight: 48,
   },
   addBtnText: {
     fontSize: 15,
@@ -468,6 +471,7 @@ const styles = StyleSheet.create({
   viewCartBtn: {
     width: 48,
     height: 48,
+    minHeight: 48,
     borderRadius: 4,
     alignItems: "center",
     justifyContent: "center",
