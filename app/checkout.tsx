@@ -428,9 +428,11 @@ const styles = StyleSheet.create({
   payTab: {
     flex: 1,
     paddingVertical: 10,
+    minHeight: 44,
     borderRadius: 4,
     borderWidth: 1,
     alignItems: "center",
+    justifyContent: "center",
   },
   payTabText: { fontSize: 13, fontFamily: "Inter_600SemiBold" },
   payForm: { gap: 14 },
