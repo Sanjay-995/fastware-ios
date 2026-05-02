@@ -346,7 +346,10 @@ const styles = StyleSheet.create({
     fontFamily: "Inter_500Medium",
   },
   backLinkWrap: {
-    padding: 12,
+    paddingHorizontal: 12,
+    minHeight: 44,
+    alignItems: "center",
+    justifyContent: "center",
   },
   backLink: {
     fontSize: 14,
