@@ -184,33 +184,45 @@ export default function ProductScreen() {
             ₹{product.price.toLocaleString("en-IN")}
           </Text>
         </View>
-        <Animated.View style={{ transform: [{ scale: scaleAdd }] }}>
-          <Pressable
-            onPress={handleAdd}
-            style={[
-              styles.addBtn,
-              {
-                backgroundColor: added ? colors.muted : colors.primary,
-              },
-            ]}
-          >
-            <Feather
-              name={added ? "check" : "shopping-bag"}
-              size={16}
-              color={added ? colors.mutedForeground : colors.primaryForeground}
-            />
-            <Text
+        <View style={styles.addRow}>
+          <Animated.View style={[{ flex: 1 }, { transform: [{ scale: scaleAdd }] }]}>
+            <Pressable
+              onPress={handleAdd}
               style={[
-                styles.addBtnText,
-                {
-                  color: added ? colors.mutedForeground : colors.primaryForeground,
-                },
+                styles.addBtn,
+                { backgroundColor: added ? colors.card : colors.primary, borderColor: colors.border, borderWidth: added ? 1 : 0 },
               ]}
             >
-              {added ? "Added to cart" : "Add to cart"}
-            </Text>
+              <Feather
+                name={added ? "check" : "shopping-bag"}
+                size={16}
+                color={added ? colors.primary : colors.primaryForeground}
+              />
+              <Text
+                style={[
+                  styles.addBtnText,
+                  { color: added ? colors.primary : colors.primaryForeground },
+                ]}
+              >
+                {added ? "Added" : "Add to cart"}
+              </Text>
+            </Pressable>
+          </Animated.View>
+          <Pressable
+            onPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+              router.push("/cart");
+            }}
+            style={[styles.viewCartBtn, { backgroundColor: colors.dark }]}
+          >
+            <Feather name="shopping-bag" size={16} color={colors.secondary} />
+            {cartItem && (
+              <Text style={[styles.viewCartCount, { color: colors.primary }]}>
+                {cartItem.quantity}
+              </Text>
+            )}
           </Pressable>
-        </Animated.View>
+        </View>
       </View>
     </View>
   );
@@ -436,6 +448,11 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontFamily: "Inter_700Bold",
   },
+  addRow: {
+    flexDirection: "row",
+    gap: 10,
+    alignItems: "center",
+  },
   addBtn: {
     flexDirection: "row",
     alignItems: "center",
@@ -447,5 +464,20 @@ const styles = StyleSheet.create({
   addBtnText: {
     fontSize: 15,
     fontFamily: "Inter_600SemiBold",
+  },
+  viewCartBtn: {
+    width: 48,
+    height: 48,
+    borderRadius: 4,
+    alignItems: "center",
+    justifyContent: "center",
+    position: "relative",
+  },
+  viewCartCount: {
+    position: "absolute",
+    top: 6,
+    right: 6,
+    fontSize: 9,
+    fontFamily: "Inter_700Bold",
   },
 });
