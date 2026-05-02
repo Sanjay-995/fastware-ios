@@ -122,7 +122,7 @@ export default function ConfirmationScreen() {
           Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
           router.replace("/(tabs)/index");
         }}
-        style={[styles.homeBtn, { backgroundColor: colors.primary }]}
+        style={({ pressed }) => [styles.homeBtn, { backgroundColor: colors.primary, opacity: pressed ? 0.7 : 1 }]}
       >
         <Text style={[styles.homeBtnText, { color: colors.primaryForeground }]}>
           Continue shopping
@@ -132,7 +132,7 @@ export default function ConfirmationScreen() {
 
       <Pressable
         onPress={() => router.push("/(tabs)/warranty")}
-        style={styles.warrantyLink}
+        style={({ pressed }) => [styles.warrantyLink, { opacity: pressed ? 0.7 : 1 }]}
       >
         <Text style={[styles.warrantyLinkText, { color: colors.mutedForeground }]}>
           Track warranty · enter {orderNum}
@@ -235,6 +235,6 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   homeBtnText: { fontSize: 15, fontFamily: "Inter_600SemiBold" },
-  warrantyLink: { paddingVertical: 4 },
+  warrantyLink: { paddingVertical: 14, minHeight: 44, justifyContent: "center" },
   warrantyLinkText: { fontSize: 12, fontFamily: "Inter_400Regular" },
 });
