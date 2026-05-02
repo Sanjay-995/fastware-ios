@@ -211,7 +211,7 @@ export default function CheckoutScreen() {
           <Feather name="arrow-left" size={20} color={colors.foreground} />
         </Pressable>
         <Text style={[styles.title, { color: colors.foreground }]}>Checkout</Text>
-        <View style={{ width: 36 }} />
+        <View style={{ width: 44 }} />
       </View>
 
       <ScrollView
@@ -477,6 +477,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     gap: 8,
     paddingVertical: 14,
+    minHeight: 48,
     borderRadius: 4,
   },
   placeBtnText: { fontSize: 15, fontFamily: "Inter_600SemiBold" },
