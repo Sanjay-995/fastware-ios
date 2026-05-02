@@ -18,10 +18,28 @@ import { products } from "@/data/products";
 import { useColors } from "@/hooks/useColors";
 
 const PILLARS = [
-  { label: "Imported from China", icon: "flag" as const },
+  { label: "BIS Certified · IS 15885", icon: "check-square" as const },
   { label: "GST invoice", icon: "file-text" as const },
   { label: "UPI · Cards · COD", icon: "credit-card" as const },
   { label: "24-month warranty", icon: "shield" as const },
+];
+
+const TECH_STACK = [
+  {
+    name: "FastShield™",
+    desc: "Smart IC overcurrent & temperature protection",
+    icon: "shield" as const,
+  },
+  {
+    name: "TrueWatt Certified™",
+    desc: "Lab-verified wattage on every SKU",
+    icon: "activity" as const,
+  },
+  {
+    name: "FlexArmor™",
+    desc: "10,000+ bend cycles, reinforced joints",
+    icon: "zap" as const,
+  },
 ];
 
 function CableDiagram({ colors }: { colors: ReturnType<typeof useColors> }) {
@@ -35,7 +53,7 @@ function CableDiagram({ colors }: { colors: ReturnType<typeof useColors> }) {
       <View style={styles.diagramOverlay}>
         <View style={[styles.specBadge, { backgroundColor: colors.primary }]}>
           <Text style={[styles.specBadgeText, { color: colors.primaryForeground }]}>
-            100 W
+            240 W
           </Text>
         </View>
         <View style={styles.specRow}>
@@ -132,7 +150,7 @@ export default function HomeScreen() {
           onPress={handleShopPress}
           style={({ pressed }) => [
             styles.ctaButton,
-            { backgroundColor: colors.primary, opacity: pressed ? 0.7 : 1 }
+            { backgroundColor: colors.primary, opacity: pressed ? 0.7 : 1 },
           ]}
         >
           <Text style={[styles.ctaText, { color: colors.primaryForeground }]}>
@@ -177,7 +195,48 @@ export default function HomeScreen() {
         </View>
       </View>
 
+      {/* Technology stack */}
+      <View style={styles.sectionHeader}>
+        <Text style={[styles.sectionIndex, { color: colors.mutedForeground }]}>03</Text>
+        <Text style={[styles.sectionTitle, { color: colors.mutedForeground }]}>
+          — TECHNOLOGY STACK
+        </Text>
+      </View>
+
+      <View style={styles.techGrid}>
+        {TECH_STACK.map((t, i) => (
+          <Pressable
+            key={t.name}
+            onPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              router.push("/(tabs)/about");
+            }}
+            style={({ pressed }) => [
+              styles.techItem,
+              { backgroundColor: colors.dark, opacity: pressed ? 0.8 : 1 },
+            ]}
+          >
+            <View style={[styles.techIconBadge, { backgroundColor: colors.primary }]}>
+              <Feather name={t.icon} size={14} color={colors.primaryForeground} />
+            </View>
+            <Text style={[styles.techName, { color: colors.secondary }]}>
+              {t.name}
+            </Text>
+            <Text style={[styles.techDesc, { color: colors.mutedForeground }]}>
+              {t.desc}
+            </Text>
+          </Pressable>
+        ))}
+      </View>
+
       {/* Trust pillars */}
+      <View style={styles.sectionHeader}>
+        <Text style={[styles.sectionIndex, { color: colors.mutedForeground }]}>04</Text>
+        <Text style={[styles.sectionTitle, { color: colors.mutedForeground }]}>
+          — TRUST
+        </Text>
+      </View>
+
       <View style={[styles.pillarsGrid, { borderColor: colors.border }]}>
         {PILLARS.map((p, i) => (
           <View
@@ -189,9 +248,7 @@ export default function HomeScreen() {
               i < 2 && { borderBottomWidth: 1 },
             ]}
           >
-            <Text style={[styles.pillarIndex, { color: colors.mutedForeground }]}>
-              {String(i + 1).padStart(2, "0")}
-            </Text>
+            <Feather name={p.icon} size={16} color={colors.primary} />
             <Text style={[styles.pillarLabel, { color: colors.foreground }]}>
               {p.label}
             </Text>
@@ -352,6 +409,34 @@ const styles = StyleSheet.create({
     fontFamily: "Inter_400Regular",
     lineHeight: 18,
   },
+  techGrid: {
+    paddingHorizontal: 20,
+    gap: 8,
+    marginBottom: 32,
+  },
+  techItem: {
+    borderRadius: 4,
+    padding: 14,
+    gap: 6,
+  },
+  techIconBadge: {
+    width: 28,
+    height: 28,
+    borderRadius: 4,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 2,
+  },
+  techName: {
+    fontSize: 14,
+    fontFamily: "Inter_700Bold",
+    letterSpacing: 0.3,
+  },
+  techDesc: {
+    fontSize: 12,
+    fontFamily: "Inter_400Regular",
+    lineHeight: 17,
+  },
   pillarsGrid: {
     marginHorizontal: 20,
     marginBottom: 24,
@@ -364,12 +449,7 @@ const styles = StyleSheet.create({
   pillarItem: {
     width: "50%",
     padding: 16,
-    gap: 4,
-  },
-  pillarIndex: {
-    fontSize: 10,
-    fontFamily: "Inter_400Regular",
-    letterSpacing: 1,
+    gap: 8,
   },
   pillarLabel: {
     fontSize: 13,
