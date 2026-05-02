@@ -6,25 +6,28 @@ export interface Product {
   connectorFrom: string;
   connectorTo: string;
   power: number;
+  powerLabel: string;
   length: string;
   price: number;
   inStock: boolean;
   feature: string;
   compatibleWith: string[];
+  isCombo?: boolean;
 }
 
 export const products: Product[] = [
   {
     id: "fw-001",
     model: "FW·001",
-    subtitle: "USB-C to USB-C",
+    subtitle: "USB-C to USB-C · 240W PD 3.1",
     description:
-      "100W fast charging with Smart IC and wear-indicator braid. 24-month replacement, order number alone.",
+      "240W PD 3.1 fast charging with FastShield™ Smart IC and FlexArmor™ reinforced joints. TrueWatt Certified™ — actual tested wattage, not marketing numbers. 24-month replacement on order number alone.",
     connectorFrom: "USB-C",
     connectorTo: "USB-C",
-    power: 100,
+    power: 240,
+    powerLabel: "240W PD 3.1",
     length: "1.5 M",
-    price: 1299,
+    price: 699,
     inStock: true,
     feature: "Wear-indicator thread",
     compatibleWith: [
@@ -41,14 +44,15 @@ export const products: Product[] = [
   {
     id: "fw-002",
     model: "FW·002",
-    subtitle: "USB-C to USB-C",
+    subtitle: "USB-C to USB-C · 65W PD",
     description:
-      "65W fast charging. Compact 1 metre. Wear-indicator braid. Smart IC.",
+      "65W PD fast charging. Compact 1 metre. FastShield™ Smart IC and FlexArmor™ reinforced joints. TrueWatt Certified™. Wear-indicator braid.",
     connectorFrom: "USB-C",
     connectorTo: "USB-C",
     power: 65,
+    powerLabel: "65W PD",
     length: "1.0 M",
-    price: 999,
+    price: 549,
     inStock: true,
     feature: "Wear-indicator thread",
     compatibleWith: [
@@ -63,14 +67,15 @@ export const products: Product[] = [
   {
     id: "fw-003",
     model: "FW·003",
-    subtitle: "USB-A to USB-C",
+    subtitle: "USB-A to USB-C · QC 4.0",
     description:
-      "18W reliable charging. 1.5 metre. Wear-indicator braid. Universal compatibility.",
+      "Qualcomm QC 4.0 fast charging at 40W. Universal USB-A compatibility. FastShield™ IC, FlexArmor™ joints. 1.5 metre. Wear-indicator braid.",
     connectorFrom: "USB-A",
     connectorTo: "USB-C",
-    power: 18,
+    power: 40,
+    powerLabel: "QC 4.0 · 40W",
     length: "1.5 M",
-    price: 849,
+    price: 499,
     inStock: true,
     feature: "Wear-indicator thread",
     compatibleWith: [
@@ -80,6 +85,39 @@ export const products: Product[] = [
       "ipad-air",
       "kindle",
     ],
+  },
+  {
+    id: "fw-004",
+    model: "FW·004",
+    subtitle: "USB-C to Lightning · 20W",
+    description:
+      "MFi-equivalent 20W fast charging for Apple Lightning devices. FastShield™ Smart IC, FlexArmor™ reinforced joints. TrueWatt Certified™. Wear-indicator braid.",
+    connectorFrom: "USB-C",
+    connectorTo: "Lightning",
+    power: 20,
+    powerLabel: "20W MFi",
+    length: "1.0 M",
+    price: 749,
+    inStock: true,
+    feature: "Wear-indicator thread",
+    compatibleWith: ["iphone-13", "iphone-12", "airpods-pro"],
+  },
+  {
+    id: "fw-combo",
+    model: "FW·COMBO",
+    subtitle: "Starter Pack · 3 Cables",
+    description:
+      "One of each: FW·001 (240W USB-C), FW·003 (QC 4.0 USB-A), and FW·004 (20W Lightning). All with FastShield™, TrueWatt™ Certified, and FlexArmor™. Ships in premium gift box.",
+    connectorFrom: "USB-C",
+    connectorTo: "USB-C / USB-A / Lightning",
+    power: 240,
+    powerLabel: "Up to 240W",
+    length: "3 cables",
+    price: 1199,
+    inStock: true,
+    feature: "Gift-box packaging",
+    compatibleWith: [],
+    isCombo: true,
   },
 ];
 
@@ -124,6 +162,30 @@ export const devices: Device[] = [
     category: "tablet",
     usbType: "usb-c",
     maxPower: 20,
+  },
+  {
+    id: "iphone-13",
+    name: "iPhone 13",
+    brand: "Apple",
+    category: "phone",
+    usbType: "lightning",
+    maxPower: 20,
+  },
+  {
+    id: "iphone-12",
+    name: "iPhone 12",
+    brand: "Apple",
+    category: "phone",
+    usbType: "lightning",
+    maxPower: 20,
+  },
+  {
+    id: "airpods-pro",
+    name: "AirPods Pro",
+    brand: "Apple",
+    category: "other",
+    usbType: "lightning",
+    maxPower: 5,
   },
   {
     id: "samsung-s24",
